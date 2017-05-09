@@ -1,0 +1,1 @@
+Ponovila kar smo delali na vajah.
