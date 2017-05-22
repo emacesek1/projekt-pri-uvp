@@ -13,13 +13,24 @@ def določimo_regijo():
                 primerni_cilji.append(kraj)
 
         print('Ideje: {}'.format(primerni_cilji))
+        print('Želite nadaljevati iskanje glede na kategorije/ ključne besede?')
+        nadaljujemo = input('Da/Ne')
+        if nadaljujemo.strip() == 'Da':
+            ideje_regije = []
+            for kraj in ideje.keys():
+                if ideje[kraj][0] != iskana_regija:
+                    ideje_regije[kraj] = ideje[kraj]
+                glede_na_oznake()
+        else:
+            print('Ideje: {}'.format(primerni_cilji))
+            
         # funkcija kjer izberemo kraj iz tega seznama
-        # ali dodamo dodatne kriterije
+        # spreminjam slovar samo lokalno: del ideje['Ljubljana']            
         # če je več idej od npr... ti ponudi ali želi da izpiše vse, koliko,
         # ali naključno, po vrstnem redu ali prve ali tiste, ki majo komentarje       
-
     elif odločitev == 'Ne':
-        pass      
+        print('Iščemo torej kraje iz cele Slovenije.')
+        glede_na_oznake()
     else:
         print('Odgovoriš lahko samo z Da ali Ne.')
         določimo_regijo()
@@ -51,6 +62,7 @@ def glede_na_oznake(izbira=[]):
         if dodamo == 'Da':
             glede_na_oznake(nova_izbira)
         elif dodamo == 'Ne':
+            print('Na podlagi kategorij: {}'.format(nova_izbira))
             pass
         else:
             print('Možna odgovora le Da ali Ne.')
@@ -91,26 +103,57 @@ def naključna_izbira():
     return random.choice(seznam_krajev)
 
 def priljubljeno(iskanja=0, iskane_oznake=[]):
+#za iskanja se bo s klikom delal neviden števec do 20 pol pa kot da zmer vela
+#ko odpreš kraj se v datoteko shranijo oznake
     if iskanja > 20:
         print('Ok')
         brez_ponovitev = []
         for oznaka in iskane_oznake:
-                if oznaka not in brez_ponovitev:
-                    brez_ponovitev.append(oznaka)
+            if oznaka not in brez_ponovitev:
+                brez_ponovitev.append(oznaka)
         print(brez_ponovitev)
         pari = []
         for oznaka in brez_ponovitev:
             kolikokrat = iskane_oznake.count(oznaka)
             pari.append((-kolikokrat, oznaka))
             pari.sort()
-        return pari[0][1]       
+        return pari[0][1]
+
+#za prikaz kraja bo on vpisal Entry
+#za vsakega ime, regija, oznake, prebran opis, prebrani komentarji, ogleda sliko
+#kraj bo vnos.get ker to vrne niz
+def prikaži_kraj(kraj):
+    #v Label z velikimi ime kraja
+    regija = ideje[kraj][0]
+    oznake = oznake_kraja(kraj)
+
+def prebrati_opis(kraj):
+    ime_datoteke = kraj + 'txt'
+    with open(ime_datoteke) as f:
+        print(f.read())
+
+def dodati_opis(kraj):
+    ime_datoteke = kraj + 'txt'
+    with open(ime_datoteke, 'w') as f:
+        besedilo = input('Opis:')
+        print(besedilo, file = f)
     
+#komentarji, kaj če jih še ni!
+def prebrati_komentar(kraj):
+    ime_datoteke = kraj + 'kom.txt'
+    with open(ime_datoteke) as f:
+        print(f.read())
 
-        
-        
-#def način_prevoza()
-#ker če izbere javni prevoz najdem še najbližjo avtobusno ali železniško postajo
+def dodati_komentar(kraj):
+    ime_datoteke = kraj + 'kom.txt'
+    with open(ime_datoteke, 'a') as f:
+        komentar = input('Vaš komentar:')
+        print('\n{} \n'.format(komentar), file=f)
 
+def počisti_iskanje():
+    pass
 
-
+#gumb počisti iskanje da začne od začetka, lahko gumb ki pove koliko krajev v bazi
 # spreminjam slovar samo lokalno: del ideje['Ljubljana']
+#za sliko:import os
+#         os.system('start slika.jpeg')
