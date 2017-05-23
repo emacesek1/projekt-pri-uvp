@@ -1,39 +1,95 @@
-from slovar_idej import ideje
+# Slovar naj bo v datoteki, ki jo preberemo
+
+class Ideje:
+    def __init__(self):
+        self.slovar = {}
+        self.nalozi_slovar_idej()
+
+    def nalozi_slovar_idej(self):
+        with open('ideje.txt') as f:
+            vse_ideje = f.read()
+            posebej = vse_ideje.split(';')
+            for vse_za_kraj in posebej:
+                ločeno = vse_za_kraj.split(':')
+                nabor = ločeno[1].split(',')
+                self.slovar[ločeno[0]] = tuple(nabor)
+
+
+    def pozeni(self):
+        self.vprasaj_po_regiji()
+        if self.regija is None: # regije nismo nastavili
+            pass
+
+    def vprasaj_po_regiji(self):
+        self.regija = None
+        odlocitev = input('Imaš v mislih določeno regijo? Da/Ne')
+
+        if odločitev == 'Da':
+            # izbere gumb z eno od regij: Gorenjska, Dolenjska, Primorska, Koroška,
+            # Štajerska, Notranjska, Prekmurje
+            self.regija = input() #dobim s pritiskom gumba
+            
+            primerni_cilji = []
+            for kraj in self.slovar.keys():
+                if self.slovar[kraj][0] == iskana_regija:
+                    primerni_cilji.append(kraj)
+            print('Ideje: {}'.format(primerni_cilji))
+           
+        elif odločitev == 'Ne':
+            print('Iščemo torej kraje iz cele Slovenije.')
+
+        else:
+            print('Odgovoriš lahko samo z Da ali Ne.')
+            self.vprasaj_po_regiji()
+
+
+
+
+            print('Želite nadaljevati iskanje glede na kategorije/ ključne besede?')
+            nadaljujemo = input('Da/Ne')
+            if nadaljujemo.strip() == 'Da':
+                
+                glede_na_oznake()
+            else:
+                print('Ideje: {}'.format(primerni_cilji))
+
+
+
+    def prikaži(self):
+        pass
+
+
+        
+i = Ideje()
+i.pozeni()
 
 #iskanje glede na kriterije:
-def določimo_regijo():
+def glede_na_regijo(slovar):
     odločitev = input('Imaš v mislih določeno regijo? Da/Ne')
     if odločitev == 'Da':
         # izbere gumb z eno od regij: Gorenjska, Dolenjska, Primorska, Koroška,
         # Štajerska, Notranjska, Prekmurje
         iskana_regija = input() #dobim s pritiskom gumba
         primerni_cilji = []
-        for kraj in ideje.keys():
-            if ideje[kraj][0] == iskana_regija:
+        for kraj in slovar.keys():
+            if slovar[kraj][0] == iskana_regija:
                 primerni_cilji.append(kraj)
-
         print('Ideje: {}'.format(primerni_cilji))
+        
         print('Želite nadaljevati iskanje glede na kategorije/ ključne besede?')
         nadaljujemo = input('Da/Ne')
         if nadaljujemo.strip() == 'Da':
-            ideje_regije = []
-            for kraj in ideje.keys():
-                if ideje[kraj][0] != iskana_regija:
-                    ideje_regije[kraj] = ideje[kraj]
-                glede_na_oznake()
+            
+            glede_na_oznake()
         else:
             print('Ideje: {}'.format(primerni_cilji))
-            
-        # funkcija kjer izberemo kraj iz tega seznama
-        # spreminjam slovar samo lokalno: del ideje['Ljubljana']            
-        # če je več idej od npr... ti ponudi ali želi da izpiše vse, koliko,
-        # ali naključno, po vrstnem redu ali prve ali tiste, ki majo komentarje       
+                  
     elif odločitev == 'Ne':
         print('Iščemo torej kraje iz cele Slovenije.')
         glede_na_oznake()
     else:
         print('Odgovoriš lahko samo z Da ali Ne.')
-        določimo_regijo()
+        glede_na_regijo(slovar)
 
 #če že izberejo regijo se more narediti nov slovar samo s kraji iz tiste regije
 def glede_na_oznake(izbira=[]):
@@ -41,7 +97,7 @@ def glede_na_oznake(izbira=[]):
     if kategorija in vse_oznake():
         shranjena_izbira = izbira
         nova_izbira = []
-        for kraj in ideje.keys():
+        for kraj in slovar.keys():
             if kategorija in oznake_kraja(kraj):
                 if kraj not in nova_izbira:
                     nova_izbira.append(kraj)
@@ -77,9 +133,10 @@ def glede_na_oznake(izbira=[]):
 
 def vse_oznake():
     '''Seznam oznak brez ponavljanja'''
+    slovar = naloži_slovar_idej()
     oznake = []
-    for kraj in ideje.keys():
-        za_en_kraj = list(ideje[kraj][1:])
+    for kraj in slovar.keys():
+        za_en_kraj = list(slovar[kraj][1:])
         for oznaka in za_en_kraj:
             if oznaka not in oznake:
                 oznake.append(oznaka)
@@ -87,13 +144,13 @@ def vse_oznake():
 
 def oznake_kraja(kraj):
     '''Seznam oznak enega kraja'''
-    return list(ideje[kraj][1:])
+    return list(slovar[kraj][1:])
         
 
 def naštejemo_vse_kraje():
     '''Seznam krajev'''
     seznam_krajev = []
-    for kraj in ideje.keys():
+    for kraj in slovar.keys():
         seznam_krajev.append(kraj)
     return seznam_krajev
 
