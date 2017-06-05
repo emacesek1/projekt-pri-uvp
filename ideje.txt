@@ -18,7 +18,8 @@ Kraški_rob:Primorska,narava;
 Kras:Primorska,narava,vinogradništvo;
 Goriška_Brda:Primorska,narava,vinogradništvo;
 Bovec:Primorska,narava,smuèišèe,slap,gore;
-Kobarid:Primorska,narava,slap,muzeji;Škocjanske_jame:Primorska,narava,jama;
+Kobarid:Primorska,narava,slap,muzeji;
+Škocjanske_jame:Primorska,narava,jama;
 Postojnska_jama:Primorska,narava,jama;
 Maribor:Štejerska,mesto,muzeji;
 Celje:Štejerska,mesto;
@@ -29,4 +30,5 @@ Pohorje:Štajerska,narava,smuèišèe,jezero,gore;
 Moravske_toplice:Prekmurje,terme;
 Lendava:Prekmurje,mesto,terme;
 Gorièko:Prekmurje,narava;
-Cerknica:Notranjska,jezero,muzeji,narava
+Cerknica:Notranjska,jezero,muzeji,narava;
+Mojstrana:Gorenjska,gore,narava
