@@ -1,12 +1,13 @@
-##i = Ideje()
-##i.pozeni()
-
+import random
 class Ideje:
     def __init__(self):
         self.regija = None
+        self.mozne_regije = ['Gorenjska', 'Dolenjska', 'Primorska', 'Koroška', 'Štajerska', 'Notranjska', 'Prekmurje']
         self.slovar = {}
         self.nalozi_slovar_idej()
         self.izbira = None
+        self.primerni_cilji = []
+        self.mozne_oznake = self.vse_oznake()
 #        self.preberemo_seznam_iskanih_oznak()
 #        self.datoteka_z_oznakami()
         
@@ -36,8 +37,8 @@ class Ideje:
             self.nadaljujemo_iskanje()
 
     def vprasaj_po_regiji(self):
-        odlocitev = input('Imaš v mislih določeno regijo? Da/Ne')
-        if odlocitev == 'Da':
+        self.odlocitev = input('Imaš v mislih določeno regijo? Da/Ne')
+        if self.odlocitev == 'Da':
             # izbere gumb z eno od regij: Gorenjska, Dolenjska, Primorska, Koroška,
             # Štajerska, Notranjska, Prekmurje
             self.regija = input() #dobim s pritiskom gumba
@@ -46,12 +47,13 @@ class Ideje:
                     self.primerni_cilji.append(kraj)
             print('Ideje: {}'.format(self.primerni_cilji))
            
-        elif odlocitev == 'Ne':
+        elif self.odlocitev == 'Ne':
             print('Iščemo torej kraje iz cele Slovenije.')
 
         else:
             print('Odgovoriš lahko samo z Da ali Ne.')
             self.vprasaj_po_regiji()
+
 
     def nadaljujemo_iskanje(self):
         print('Želite nadaljevati iskanje glede na oznake/ ključne besede?')
@@ -63,34 +65,29 @@ class Ideje:
             print('Ideje: {}'.format(self.izbira))
 
     def vprasaj_po_oznakah(self):
-        self.oznaka = input('Katero kategorijo oz. katero ključno besedo naj iščemo?')
-        if self.oznaka in self.vse_oznake():
-            #self.iskane_oznake.append(self.oznaka)
-            nova_izbira = []
-            for kraj in self.slovar.keys():
-                if self.oznaka in self.oznake_kraja(kraj):
-                    if kraj not in nova_izbira:
-                        nova_izbira.append(kraj)
-            if self.izbira != None:
-                izbira = list(set(nova_izbira) & set(self.izbira))
-                self.izbira = izbira
-                print('Na podlagi oznak: {}'.format(self.izbira))
-                if self.izbira == []:
-                    print('Vašim kriterijem ne ustreza noben vnešen kraj.')
-                    print('Poskusite znova z drugačnimi.')
-                    self.izbira = None
-                    self.vprasaj_po_oznakah()
-                self.dodamo_vec_oznak()
-            else:
-                self.izbira = nova_izbira
-                print('Na podlagi oznak: {}'.format(self.izbira))
-                self.dodamo_vec_oznak()
+##      self.oznaka = input('Katero kategorijo oz. katero ključno besedo naj iščemo?')
+        nova_izbira = []
+        for kraj in self.slovar.keys():
+            if self.oznaka in self.oznake_kraja(kraj):
+                if kraj not in nova_izbira:
+                    nova_izbira.append(kraj)
+                    
+        if self.izbira != None:
+            izbira = list(set(nova_izbira) & set(self.izbira))
+            self.izbira = izbira
+            print('Na podlagi oznak: {}'.format(self.izbira))
+            if self.izbira == []:
+                print('Vašim kriterijem ne ustreza noben vnešen kraj.')
+                print('Poskusite znova z drugačnimi.')
+                self.izbira = None
+                self.vprasaj_po_oznakah()
+            self.dodamo_vec_oznak()
         else:
-            vse_oznake = self.vse_oznake()
-            print('Se opravičujemo, vendar ta oznaka/ključna beseda ne obstaja.')
-            print('Poskusite znova. Na voljo so vam naslednje oznake:{}'.format(vse_oznake))
-            self.vprasaj_po_oznakah()
-    
+            self.izbira = nova_izbira
+            print('Na podlagi oznak: {}'.format(self.izbira))
+            self.dodamo_vec_oznak()
+
+
     def dodamo_vec_oznak(self):
         dodamo_oznako = input('Razširimo iskanje s še kakšno kategorijo? Da/Ne')
         if dodamo_oznako == 'Da':
@@ -115,7 +112,7 @@ class Ideje:
         '''Seznam oznak enega kraja'''
         return list(self.slovar[kraj][1:])
 
-    import random
+
     def nakljucna_izbira(self):
         self.izbira = random.choice(self.nastejemo_vse_kraje())
             
@@ -214,4 +211,8 @@ def pocisti_iskanja():
 # spreminjam slovar samo lokalno: del ideje['Ljubljana']
 #za sliko:import os
 #         os.system('start slika.jpeg')
+
+##i = Ideje()
+##i.poisci_ideje()
+
 
