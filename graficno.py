@@ -15,8 +15,9 @@ class Izgled:
         oznaka.grid(row=0)
         gumb1 = tk.Button(prvo_okno, text='Iščem idejo', command = self.iscemo_idejo)
         gumb1.grid(row=1, column=2)
-        gumb2 = tk.Button(prvo_okno, text='Dodal/-a bi nov kraj')
+        gumb2 = tk.Button(prvo_okno, text='Dodal/-a bi nov kraj', command = self.dodamo_kraj)
         gumb2.grid(row=2, column=2)
+        prvo_okno.mainloop()
 
     def iscemo_idejo(self):
         self.i.regija = None
@@ -24,6 +25,8 @@ class Izgled:
         self.i.seznam_oznak = []
         self.ustrezni_cilji = None
         self.i.primerni_cilji = []
+        self.i.stanje = None
+        self.i.nalozi_slovar_idej()
         
         self.odlocitveno_okno = tk.Tk()
         oznaka = tk.Label(self.odlocitveno_okno, text='Kako bi želel začeti iskanje?')
@@ -40,6 +43,7 @@ class Izgled:
 
     def nakljucno_iskanje(self):
         self.i.nakljucna_izbira()
+        self.i.stanje = 'nakljucno'
         self.odlocitveno_okno.destroy()
         
         self.okno_za_nakljucno = tk.Tk()
@@ -129,7 +133,7 @@ class Izgled:
         self.ustrezni_cilji.grid(row=4, column=1)
         self.i.primerni_cilji = []
             
-        navodilo = tk.Label(self.okno_z_oznakami, text = 'V vnosno polje vpišite ime kraja, ki Vas zanima.')
+        navodilo = tk.Label(self.okno_z_oznakami, text = 'V vnosno polje vpišite ime kraja, ki Vas zanima. Za presledek uporabljajte znak _.')
         navodilo.grid(row=6, column=1)
 
         self.vnosno_polje = tk.Entry(self.okno_z_oznakami)
@@ -142,6 +146,7 @@ class Izgled:
         self.pocisti.grid(row=10, column=1)
         if self.i.seznam_oznak == []:
             self.pocisti.config(state='disabled')
+        self.i.stanje = None
 
         znova_zacni = tk.Button(self.okno_z_oznakami, text='Znova začnimo iskanje', command=self.zacnimo_znova)
         znova_zacni.grid(row=11, column=1)
@@ -153,10 +158,10 @@ class Izgled:
         self.z_oznakami()
 
     def zacnimo_znova(self):
-        if self.i.seznam_oznak != [] or self.i.regija != None:
-            self.okno_z_oznakami.destroy()
-        else:
+        if self.i.stanje != None:
             self.okno_za_nakljucno.destroy()
+        else:
+            self.okno_z_oznakami.destroy()
         self.iscemo_idejo()
 
     def priljubljeno_iskanje(self):
@@ -174,22 +179,67 @@ class Izgled:
         self.okno_za_prikaz = tk.Toplevel()
 
         text1 = tk.Text(self.okno_za_prikaz)
-        photo= PhotoImage(file='Bohinj.gif')
+        photo= PhotoImage(file= self.i.izbira + '.gif')
         text1.insert(END, self.i.izbira)
         text1.image_create(END, image=photo)
         text1.pack(side=LEFT)
 
-        text2 = tk.Text(self.okno_za_prikaz)
+        text2 = tk.Text(self.okno_za_prikaz, height=15, width=50 )
         text2.insert(END, self.i.regija + '\n')
         text2.insert(END, self.i.oznake_kraja(self.i.izbira))
-        text2.insert(END, '\nOpis kraja')
         text2.pack(side=LEFT)
 
         self.okno_za_prikaz.mainloop()
+
+    def dodamo_kraj(self):
+        self.okno_za_dodajanje_kraja = tk.Tk()
         
+        navodilo = tk.Label(self.okno_za_dodajanje_kraja, text='V spodnje vnosno polje vpišite ime kraja. Za presledek uporabite znak _. V datoteko s programom dodajte še manjšo sliko oblike ime_kraja.gif.')
+        navodilo.grid(column=0)
+        self.ime = tk.Entry(self.okno_za_dodajanje_kraja)
+        self.ime.grid(column=0)
 
+        regija_navodilo = tk.Label(self.okno_za_dodajanje_kraja, text='S pritiskom na gumb izberite regijo.')
+        regija_navodilo.grid(column=0)
+        for regija in self.i.mozne_regije:
+            def nastavi_regijo(r=regija):
+                self.i.regija = r
+                regija = tk.Label(self.okno_za_dodajanje_kraja, text='Izbrana regija: {}'.format(self.i.regija))
+                regija.grid(column=0)
+            gumb = tk.Button(self.okno_za_dodajanje_kraja, text=regija, command=nastavi_regijo)
+            gumb.grid(column=0)
 
+        oznake_navodilo = tk.Label(self.okno_za_dodajanje_kraja, text='Z gumbi izberite oznake.')        
+        oznake_navodilo.grid(column=0)    
+        for oznaka in self.i.mozne_oznake:
+            def nastavi_oznako(o=oznaka):
+                self.i.oznaka = o
+                self.i.zapis_oznak()
+            gumb = tk.Button(self.okno_za_dodajanje_kraja, text=oznaka, command=nastavi_oznako)
+            gumb.grid(column=0)
+            
+        dodajmo_kraj = tk.Button(self.okno_za_dodajanje_kraja, text='Dodajmo kraj', command=self.oddaja_podatkov)
+        dodajmo_kraj.grid(column=1)
+        ne_shrani = tk.Button(self.okno_za_dodajanje_kraja, text='Ne shrani', command=self.ne_shranimo)
+        ne_shrani.grid(column=1)
 
+    def ne_shranimo(self):
+        self.okno_za_dodajanje_kraja.destroy()
+        
+    def oddaja_podatkov(self):
+        self.i.izbira = self.ime.get()
+        if self.i.izbira == '':
+            self.okno_za_dodajanje_kraja.destroy()
+            self.dodamo_kraj()
+            napaka = tk.Label(self.okno_za_dodajanje_kraja, text='Prišlo je do napake, poskusite znova')
+            napaka.grid()
+        elif self.i.regija == None:
+            self.okno_za_dodajanje_kraja.destroy()
+            self.dodamo_kraj()
+        else:
+            self.i.zapis_kraja()
+            self.okno_za_dodajanje_kraja.destroy()
+        
 
 Izgled()
 

@@ -121,7 +121,25 @@ class Ideje:
         if self.regija == None:
             self.regija = self.slovar[self.izbira][0]
 
-        
+#dodajanje kraja
+    def zapis_oznak(self):
+        if self.oznaka not in self.seznam_oznak:
+            self.seznam_oznak.append(self.oznaka) 
+
+    def zapis_kraja(self):
+        niz = ''
+        for oznaka in self.seznam_oznak:
+            if niz == '':
+                nov_niz = oznaka
+                niz = nov_niz
+            else:
+                nov_niz = niz + ',' + oznaka
+                niz = nov_niz
+        self.oznake = niz
+            
+        with open('ideje.txt', 'a') as f:
+            print(';', file=f)
+            print(self.izbira + ':' + self.regija + ',' + self.oznake ,file=f)
 
 
 
