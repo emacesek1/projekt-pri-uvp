@@ -6,6 +6,7 @@ class Ideje:
     def __init__(self):
         self.regija = None
         self.mozne_regije = ['Gorenjska', 'Dolenjska', 'Primorska', 'Koroška', 'Štajerska', 'Notranjska', 'Prekmurje']
+        self.brez_regije = None
         self.slovar = {}
         self.nalozi_slovar_idej()
         self.izbira = None
@@ -13,8 +14,7 @@ class Ideje:
         self.mozne_oznake = self.vse_oznake()
         self.seznam_oznak = []
         self.stanje = None
-        self.cisti_zacetek()
-        self.stetje_iskanih_oznak()
+        self.cisti_zacetek_oznak()
         
     def nalozi_slovar_idej(self):
         if self.regija != None:
@@ -27,12 +27,11 @@ class Ideje:
         else:
             with open('ideje.txt') as f:
                 vse_ideje = f.read()
-                posebej = vse_ideje.split(';')
-                for vse_za_kraj in posebej:
-                    loceno = vse_za_kraj.split(':')
-                    seznam_atributov = loceno[1].strip().split(',')
-                    self.slovar[loceno[0].strip()] = seznam_atributov
-        #slovar krajev, atributi kot seznam
+                posebej_kraji = vse_ideje.split(';')
+                for vse_za_kraj in posebej_kraji:
+                    loceno_ime_in_atributi = vse_za_kraj.split(':')
+                    seznam_atributov = loceno_ime_in_atributi[1].strip().split(',')
+                    self.slovar[loceno_ime_in_atributi[0].strip()] = seznam_atributov
 
     def vse_oznake(self):
         '''Seznam vseh oznak brez ponavljanja'''
@@ -73,26 +72,31 @@ class Ideje:
         for kraj in self.slovar.keys():
             vsota = 0
             for oznaka in self.seznam_oznak:
-                if oznaka in self.oznake_kraja(kraj):
-                    vsota += 0
-                else:
+                if oznaka not in self.oznake_kraja(kraj):
                     vsota += 1
             if vsota == 0:
-                if kraj not in self.primerni_cilji:
-                    self.primerni_cilji.append(kraj)
+                self.primerni_cilji.append(kraj)
+        if self.stanje == 'priljubljeno':
+            if self.primerni_cilji == []:
+                najveckrat = self.seznam_oznak[0]
+                self.stanje = 'najpogostejsa_oznaka'
+                for kraj in self.slovar.keys():
+                    if najveckrat in self.oznake_kraja(kraj):
+                        self.primerni_cilji.append(kraj)
 
     def pocisti_oznake(self):
         self.seznam_oznak = []
         self.primerni_cilji = []
         self.stanje = 'pocisti'
                 
-#za priljubljeno trikrat najveckrat iskane oznake
-    def cisti_zacetek(self):
+#za priljubljeno trikrat najveckrat iskane oznake, drugače največkrat iskana
+    def cisti_zacetek_oznak(self):
         if os.path.exists('iskane_oznake.txt'):
             self.stetje_iskanih_oznak()
         else:
             with open('iskane_oznake.txt', 'w') as f:
                 print(' ', file=f)
+            self.stevilo_iskanih_oznak = 0
 
     def stetje_iskanih_oznak(self):
         with open('iskane_oznake.txt') as f:            
@@ -127,6 +131,7 @@ class Ideje:
             self.seznam_oznak.append(self.oznaka) 
 
     def zapis_kraja(self):
+        self.stanje = None
         niz = ''
         for oznaka in self.seznam_oznak:
             if niz == '':
